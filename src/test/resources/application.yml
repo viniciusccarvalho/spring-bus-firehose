@@ -1,0 +1,3 @@
+ firehose:
+    doppler-url: ws://doppler.10.1.1.11.xip.io
+
