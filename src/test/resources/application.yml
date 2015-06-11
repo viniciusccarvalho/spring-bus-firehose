@@ -1,3 +1,9 @@
  firehose:
     doppler-url: ws://doppler.10.1.1.11.xip.io
+    doppler-events: "HttpStart,LogMessage"
+    #only needed if you are deploying to CF
+    authentication-url:
+    cf-domain:
+    username:
+    password:
 
