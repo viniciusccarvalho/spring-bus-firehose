@@ -1,13 +1,26 @@
+/*
+ * Copyright 2015 original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.bus.firehose.config;
 
 import org.cloudfoundry.client.lib.CloudCredentials;
-import org.cloudfoundry.client.lib.CloudFoundryClient;
 import org.cloudfoundry.client.lib.oauth2.OauthClient;
 import org.cloudfoundry.client.lib.util.RestUtil;
 import org.cloudfoundry.dropsonde.events.EventFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.bus.firehose.integration.ByteBufferMessageConverter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -23,16 +36,14 @@ import org.springframework.integration.websocket.inbound.WebSocketInboundChannel
 import org.springframework.messaging.MessageChannel;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.jetty.JettyWebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import java.util.UUID;
 
 /**
- * Created by vcarvalho on 6/11/15.
+ * @author Vinicius Carvalho
  */
 @Configuration
 public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
@@ -44,24 +55,24 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
     private FirehoseProperties firehoseProperties;
 
     @Bean
-    public WebSocketClient webSocketClient(){
+    public WebSocketClient webSocketClient() {
         return new StandardWebSocketClient();
 
-                //new JettyWebSocketClient(new org.eclipse.jetty.websocket.client.WebSocketClient(new SslContextFactory(true)));
+        //new JettyWebSocketClient(new org.eclipse.jetty.websocket.client.WebSocketClient(new SslContextFactory(true)));
     }
 
     @Bean
-    public ClientWebSocketContainer webSocketContainer(WebSocketClient client) throws Exception{
-        ClientWebSocketContainer container = new ClientWebSocketContainer(client,getDopplerEndpoint());
+    public ClientWebSocketContainer webSocketContainer(WebSocketClient client) throws Exception {
+        ClientWebSocketContainer container = new ClientWebSocketContainer(client, getDopplerEndpoint());
         HttpHeaders headers = new HttpHeaders();
 
 
-        if(!StringUtils.isEmpty(firehoseProperties.getUsername())){
-            OauthClient oauthClient = new OauthClient(new URL(firehoseProperties.getAuthenticationUrl()),new RestUtil().createRestTemplate(null,true));
+        if (!StringUtils.isEmpty(firehoseProperties.getUsername())) {
+            OauthClient oauthClient = new OauthClient(new URL(firehoseProperties.getAuthenticationUrl()), new RestUtil().createRestTemplate(null, true));
             oauthClient.init(new CloudCredentials(firehoseProperties.getUsername(), firehoseProperties.getPassword()));
             headers.add("Authorization", "bearer " + oauthClient.getToken().getValue());
-        }else{
-            headers.add("Authorization","");
+        } else {
+            headers.add("Authorization", "");
         }
         container.setHeaders(headers);
 
@@ -70,7 +81,7 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     @Bean
-    public WebSocketInboundChannelAdapter webSocketInboundChannelAdapter(ClientWebSocketContainer webSocketContainer, ByteBufferMessageConverter converter, MessageChannel byteChannel){
+    public WebSocketInboundChannelAdapter webSocketInboundChannelAdapter(ClientWebSocketContainer webSocketContainer, ByteBufferMessageConverter converter, MessageChannel byteChannel) {
         WebSocketInboundChannelAdapter adapter = new WebSocketInboundChannelAdapter(webSocketContainer);
         adapter.setMessageConverters(Collections.singletonList(converter));
         adapter.setOutputChannel(byteChannel);
@@ -79,18 +90,17 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     @Bean
-    public MessageChannel byteChannel(){
+    public MessageChannel byteChannel() {
         return new DirectChannel();
     }
 
 
     @Filter(outputChannel = "output", inputChannel = "envelopeChannel")
-    public boolean filterMessages(EventFactory.Envelope envelope){
-        if(StringUtils.isEmpty(firehoseProperties.getDopplerEvents())){
+    public boolean filterMessages(EventFactory.Envelope envelope) {
+        if (StringUtils.isEmpty(firehoseProperties.getDopplerEvents())) {
             return true;
-        }
-        else{
-            for(String event : firehoseProperties.getDopplerEvents().split(",")){
+        } else {
+            for (String event : firehoseProperties.getDopplerEvents().split(",")) {
                 if (event.equalsIgnoreCase(envelope.getEventType().toString()))
                     return true;
             }
@@ -99,16 +109,16 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     @Bean
-    public MessageChannel output(){
+    public MessageChannel output() {
         return new DirectChannel();
     }
 
 
-    private String getDopplerEndpoint(){
+    private String getDopplerEndpoint() {
 
-        String url =  StringUtils.isEmpty(firehoseProperties.getDopplerUrl()) ? "wss://doppler."+firehoseProperties.getCfDomain() : firehoseProperties.getDopplerUrl();
-        String subscription =  StringUtils.isEmpty(firehoseProperties.getDopplerSubscription()) ?  "firehose-x" : firehoseProperties.getDopplerSubscription();
-        return url+"/firehose/"+subscription;
+        String url = StringUtils.isEmpty(firehoseProperties.getDopplerUrl()) ? "wss://doppler." + firehoseProperties.getCfDomain() : firehoseProperties.getDopplerUrl();
+        String subscription = StringUtils.isEmpty(firehoseProperties.getDopplerSubscription()) ? "firehose-x" : firehoseProperties.getDopplerSubscription();
+        return url + "/firehose/" + subscription;
     }
 
 
