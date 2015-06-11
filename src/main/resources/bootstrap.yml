@@ -1,0 +1,6 @@
+---
+spring:
+  bus:
+    group: firehose
+    name: doppler
+    index: 0 # source
