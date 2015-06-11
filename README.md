@@ -27,6 +27,6 @@ The doppler-events is a comma separated list of events you'd like to filter, use
 
 * Requirements
 
-It currently only needs a rabbitmq server started on localhost, if you are deploying to PCF you can just bind a rabbit instance from there.
+ Rabbitmq server started on localhost, if you are deploying to PCF you can just bind a rabbit instance from there.
 
 
