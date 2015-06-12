@@ -1,5 +1,4 @@
 # Spring Bus Firehose Sample
-==========================
 
 Sample [spring-bus](http://github.com/spring-projects/spring-bus) source that listens for [cloudfoundry doppler](https://github.com/cloudfoundry/loggregator) firehose metrics.
 
