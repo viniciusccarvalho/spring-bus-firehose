@@ -46,7 +46,7 @@ After running you should be able to see the messages showing up on a queue in ra
 ## Todo
 
 * Integrate with spring-bus-samples tap
-* Output JSON not binary protobuf
+* ~~Output JSON not binary protobuf~~
 * Take over the world
 
 

@@ -17,6 +17,7 @@ ext {
     springBusVersion = "1.0.0.BUILD-SNAPSHOT"
     springXDVersion = "1.2.0.BUILD-SNAPSHOT"
     springIntegrationVersion = "4.2.0.M1"
+    jacksonProtobufVersion = "2.6.0-rc2"
     cfClientVersion = "1.1.2"
     protobufVersion = "2.6.1"
 }
@@ -52,6 +53,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.cloudfoundry:cloudfoundry-client-lib:$cfClientVersion")
     compile("com.google.protobuf:protobuf-java:$protobufVersion")
+    compile("org.eclipse.jetty.websocket:websocket-client:9.2.11.v20150529")
+    compile("com.googlecode.protobuf-java-format:protobuf-java-format:1.2")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     protobuf fileTree("proto/events/") {
         exclude "README.md"

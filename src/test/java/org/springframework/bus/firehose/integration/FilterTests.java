@@ -16,16 +16,13 @@
 
 package org.springframework.bus.firehose.integration;
 
-import com.google.protobuf.ByteString;
-import junit.framework.Assert;
 import org.cloudfoundry.dropsonde.events.EventFactory;
-import org.cloudfoundry.dropsonde.events.HttpFactory;
-import org.cloudfoundry.dropsonde.events.LogFactory;
-import org.cloudfoundry.dropsonde.events.UuidFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.bus.firehose.config.BusConfig;
 import org.springframework.bus.firehose.config.FirehoseProperties;
 import org.springframework.bus.firehose.support.ProtocolGenerator;
+import org.springframework.integration.support.MessageBuilder;
 
 /**
  * @author Vinicius Carvalho
@@ -45,10 +42,10 @@ public class FilterTests {
 
         config.setFirehoseProperties(properties);
 
-        boolean acceptHttp = config.filterMessages(startStop);
-        boolean acceptLog = config.filterMessages(logMessage);
+        boolean acceptHttp = config.filterMessages(MessageBuilder.withPayload(startStop).setHeader("EventType",startStop.getEventType().name()).build());
+        boolean acceptLog = config.filterMessages(MessageBuilder.withPayload(logMessage).setHeader("EventType",logMessage.getEventType().name()).build());
         properties.setDopplerEvents("ValueMetric");
-        boolean failHttp = config.filterMessages(startStop);
+        boolean failHttp = config.filterMessages(MessageBuilder.withPayload(startStop).setHeader("EventType",startStop.getEventType().name()).build());
 
         Assert.assertTrue(acceptHttp);
         Assert.assertTrue(acceptLog);

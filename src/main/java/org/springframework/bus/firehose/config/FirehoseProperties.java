@@ -33,6 +33,7 @@ public class FirehoseProperties {
     private String password;
     private String dopplerEvents;
     private String dopplerSubscription;
+    private boolean outputJson = false;
 
 
     public String getDopplerUrl() {
@@ -91,5 +92,11 @@ public class FirehoseProperties {
         this.dopplerSubscription = dopplerSubscription;
     }
 
+    public boolean getOutputJson() {
+        return outputJson;
+    }
 
+    public void setOutputJson(boolean outputJson) {
+        this.outputJson = outputJson;
+    }
 }

@@ -16,9 +16,13 @@
 
 package org.springframework.bus.firehose.integration;
 
+import com.googlecode.protobuf.format.JsonFormat;
 import org.cloudfoundry.dropsonde.events.EventFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bus.firehose.config.FirehoseProperties;
 import org.springframework.integration.annotation.Transformer;
-import org.springframework.messaging.support.GenericMessage;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,10 +31,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnvelopeTransformer {
 
+
+    private FirehoseProperties properties;
+
+    @Autowired
+    public EnvelopeTransformer(FirehoseProperties properties){
+        this.properties = properties;
+    }
+
     @Transformer(inputChannel = "byteChannel", outputChannel = "envelopeChannel")
-    public Object readEnvelope(GenericMessage<?> message) throws Exception {
+    public Message<?> readEnvelope(Message<?> message) throws Exception {
         byte[] bytes = (byte[]) message.getPayload();
         EventFactory.Envelope envelope = EventFactory.Envelope.parseFrom(bytes);
-        return envelope;
+        Object payload = null;
+        payload = (properties.getOutputJson()) ? JsonFormat.printToString(envelope) : envelope;
+        Message<?> result = MessageBuilder.withPayload(payload).setHeader("EventType",envelope.getEventType().name()).build();
+        return result;
     }
 }

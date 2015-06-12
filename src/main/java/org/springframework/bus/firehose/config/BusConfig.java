@@ -19,7 +19,7 @@ package org.springframework.bus.firehose.config;
 import org.cloudfoundry.client.lib.CloudCredentials;
 import org.cloudfoundry.client.lib.oauth2.OauthClient;
 import org.cloudfoundry.client.lib.util.RestUtil;
-import org.cloudfoundry.dropsonde.events.EventFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bus.firehose.integration.ByteBufferMessageConverter;
 import org.springframework.context.ApplicationContext;
@@ -33,10 +33,11 @@ import org.springframework.integration.annotation.Filter;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.websocket.ClientWebSocketContainer;
 import org.springframework.integration.websocket.inbound.WebSocketInboundChannelAdapter;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.client.jetty.JettyWebSocketClient;
 
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -56,9 +57,9 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     @Bean
     public WebSocketClient webSocketClient() {
-        return new StandardWebSocketClient();
-
-        //new JettyWebSocketClient(new org.eclipse.jetty.websocket.client.WebSocketClient(new SslContextFactory(true)));
+//        return new StandardWebSocketClient();
+        //@TODO why Jetty client is not working with spring integration 4.2.0? AbstractMethodException being thrown
+        return new JettyWebSocketClient(new org.eclipse.jetty.websocket.client.WebSocketClient(new SslContextFactory(true)));
     }
 
     @Bean
@@ -96,12 +97,12 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 
     @Filter(outputChannel = "output", inputChannel = "envelopeChannel")
-    public boolean filterMessages(EventFactory.Envelope envelope) {
+    public boolean filterMessages(Message<?> message) {
         if (StringUtils.isEmpty(firehoseProperties.getDopplerEvents())) {
             return true;
         } else {
             for (String event : firehoseProperties.getDopplerEvents().split(",")) {
-                if (event.equalsIgnoreCase(envelope.getEventType().toString()))
+                if (event.equalsIgnoreCase(message.getHeaders().get("EventType").toString()))
                     return true;
             }
         }
