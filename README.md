@@ -43,6 +43,10 @@ Modify the `application.yml` to have the following properties:
 
 After running you should be able to see the messages showing up on a queue in rabbit named `xdbus.firehose.0`
 
+## Todo
 
+* Integrate with spring-bus-samples tap
+* Output JSON not binary protobuf
+* Take over the world
 
 
