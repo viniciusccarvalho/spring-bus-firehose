@@ -14,7 +14,11 @@ buildscript {
 }
 
 ext {
-    springIntegrationVersion = '4.1.2.RELEASE'
+    springBusVersion = "1.0.0.BUILD-SNAPSHOT"
+    springXDVersion = "1.2.0.BUILD-SNAPSHOT"
+    springIntegrationVersion = "4.2.0.M1"
+    cfClientVersion = "1.1.2"
+    protobufVersion = "2.6.1"
 }
 
 apply plugin: 'java'
@@ -22,35 +26,10 @@ apply plugin: 'protobuf'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
-
-
 apply plugin: 'maven'
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
-}
-
-dependencies {
-    compile("org.springframework.integration:spring-integration-websocket:4.1.5.RELEASE")
-    compile("org.springframework.bus:spring-bus-core:1.0.0.BUILD-SNAPSHOT")
-    compile("org.eclipse.jetty.websocket:websocket-client:9.3.0.M2")
-    compile("org.springframework.xd:spring-xd-messagebus-rabbit:1.2.0.BUILD-SNAPSHOT")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.cloudfoundry:cloudfoundry-client-lib:1.1.2")
-    compile("com.google.protobuf:protobuf-java:2.6.1")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    protobuf fileTree("proto/events/") {
-        exclude "README.md"
-    }
-}
-
-
-
-generatedFileDir = "${projectDir}/src"
 
 group = 'org.springframework.bus.firehose'
 version = '1.0.0.BUILD-SNAPSHOT'
-
 description = "Spring bus firehose source module"
 
 sourceCompatibility = 1.8
@@ -64,6 +43,25 @@ repositories {
     maven { url "http://repo.spring.io/snapshot" }
     maven { url "http://repo.spring.io/milestone" }
 }
+
+dependencies {
+    compile("org.springframework.integration:spring-integration-websocket:$springIntegrationVersion")
+    compile("org.springframework.bus:spring-bus-core:$springBusVersion")
+    compile("org.springframework.bus:spring-xd-runner:$springBusVersion")
+    compile("org.springframework.xd:spring-xd-messagebus-rabbit:$springXDVersion")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.cloudfoundry:cloudfoundry-client-lib:$cfClientVersion")
+    compile("com.google.protobuf:protobuf-java:$protobufVersion")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    protobuf fileTree("proto/events/") {
+        exclude "README.md"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
 
 idea.module {
         excludeDirs -= file(buildDir)
