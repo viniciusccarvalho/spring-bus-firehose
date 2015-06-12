@@ -31,7 +31,7 @@ Modify the `application.yml` to have the following properties:
 
 ```
  firehose:
-    doppler-url: ws://doppler.10.1.1.11.xip.io
+    doppler-url: wss://doppler.<your_cf_domain>
     #List of dropsonde events you want to subscribe to
     doppler-events: "HttpStart,LogMessage"
     #usually uaa.<pcfdomain>
