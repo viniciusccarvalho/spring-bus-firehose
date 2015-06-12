@@ -34,6 +34,8 @@ Modify the `application.yml` to have the following properties:
     doppler-url: wss://doppler.<your_cf_domain>
     #List of dropsonde events you want to subscribe to
     doppler-events: "HttpStart,LogMessage"
+    #should the output message contain POJOs or JSON strings
+    output-json:
     #usually uaa.<pcfdomain>
     authentication-url:
     cf-domain:
