@@ -59,12 +59,23 @@ dependencies {
     }
 }
 
+
+
 idea.module {
         excludeDirs -= file(buildDir)
         buildDir.listFiles({d,f->f != 'generated-sources'} as FilenameFilter).each {excludeDirs += it}
 }
 
 }
+
+project(':source-module'){
+    dependencies {
+        compile 'org.webjars:highcharts:4.1.5'
+        compile 'org.webjars:jquery:2.1.4'
+        compile 'org.webjars:bootstrap:3.3.4'
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }

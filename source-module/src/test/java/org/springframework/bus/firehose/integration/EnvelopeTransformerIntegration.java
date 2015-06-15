@@ -27,7 +27,7 @@ import org.springframework.messaging.Message;
 /**
  * @author Vinicius Carvalho
  */
-public class EnvelopeTransformerTests {
+public class EnvelopeTransformerIntegration {
 
 
     @Test

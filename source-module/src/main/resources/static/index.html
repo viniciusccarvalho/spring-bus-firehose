@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spring bus firehose dashboard</title>
+
+    <link href="webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bus.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9">
+            <div id="throughput-chart"></div>
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <div class="col-md-8 dashboard-font">Input count:</div>
+                <div class="col-md-4"><p id="inputTotal" class="dashboard-font"/></div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 dashboard-font">Output count:</div>
+                <div class="col-md-4"><p id="outputTotal" class="dashboard-font"/></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="webjars/jquery/2.1.4/jquery.min.js"></script>
+<script src="webjars/highcharts/4.1.5/highcharts.js"></script>
+<script src="webjars/highcharts/4.1.5/themes/dark-unica.js"/>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="webjars/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+
+<script>
+
+    function metricChart(container) {
+        var self = this;
+        self.chart = new Highcharts.Chart({
+                    chart: {
+                        type: 'spline',
+                        renderTo: container,
+                        backgroundColor:'rgba(77, 80, 82, 1.0)'
+
+                    },
+                    title :{
+                        text: "Firehose input/output rates"
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        lineWidth: 0,
+                        minorGridLineWidth: 0,
+                        lineColor: 'transparent',
+                        dateTimeLabelFormats: '%H:%M:%S',
+                        labels: {
+                            enabled: false
+                        },
+                        minorTickLength: 0,
+                        tickLength: 0
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Messages / second'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    plotOptions: {
+                        series: {
+                            threshold: 0,
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name:"input",
+                            data: []
+                        },
+                        {
+                            name:"output",
+                            data: []
+                        }
+                    ]
+                }
+        );
+        self.addPoint = function(data,index){
+            var shift = self.chart.series[0].data.length > 300;
+            self.chart.series[index].addPoint(data,true,shift);
+        };
+    }
+    var chart = new metricChart("throughput-chart");
+
+
+    (function poll(){
+        setTimeout(function(){
+            $.ajax({ url: "/metrics", success: function(data){
+
+                $("#inputTotal").text(data["integration.channel.envelopeChannel.sendRate.count"]);
+                $("#outputTotal").text(data["integration.channel.output.sendRate.count"]);
+                chart.addPoint([Date.now(),data["integration.channel.envelopeChannel.sendRate.mean"]],0);
+                chart.addPoint([Date.now(),data["integration.channel.output.sendRate.mean"]],1);
+                poll();
+            }, dataType: "json"});
+        }, 5000);
+    })();
+
+</script>
+</body>
+</html>
