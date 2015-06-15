@@ -1,6 +1,6 @@
 # Spring Bus Firehose Sample
 
-Sample [spring-bus](http://github.com/spring-projects/spring-bus) source that listens for [cloudfoundry doppler](https://github.com/cloudfoundry/loggregator) firehose metrics.
+Sample [spring-bus](http://github.com/spring-projects/spring-bus) project that listens for [cloudfoundry doppler](https://github.com/cloudfoundry/loggregator) firehose events.
 
 ## Running
 
@@ -10,8 +10,9 @@ When importing this project into your favorite IDE you may need to run `gradle b
 
 ### Subprojects
 
-* source-module: Contains the websocket client to doppler, filters messages based on `doppler-events` provided on application.yml or as an environment variable.
+* source-module: The source that drains events from doppler, filters messages based on `doppler-events` and sends them downstream.
 * tap-module: Act as a sink that will log all messages to the console. 
+
 
 ### Dashboard
 
@@ -23,6 +24,10 @@ The `source-module` has a basic dashboard published on its root path (index.html
 ## Redis
 
 The only message bus supported is [redis](http://redis.io). You will need either to have a local installation or if you are running inside PCF, just bind a redis service to the application. 
+
+## Running
+
+Once you build with `gradle build` just start each project by calling `java -jar <module-name>/build/libs/<module-name>-1.0.0.BUILD-SNAPSHOT.jar`
 
 ## Running with lattice
 
