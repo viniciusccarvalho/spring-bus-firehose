@@ -60,7 +60,7 @@ After running you should be able to see the messages showing up on a queue in re
 
 ## Todo
 
-* Integrate with spring-bus-samples tap
+* ~~Integrate with spring-bus-samples tap~~
 * ~~Output JSON not binary protobuf~~
 * Take over the world
 
