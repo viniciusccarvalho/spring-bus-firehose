@@ -1,0 +1,4 @@
+rootProject.name = "spring-bus-firehose"
+
+include "source-module"
+include "tap-module"

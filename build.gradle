@@ -21,7 +21,7 @@ ext {
     cfClientVersion = "1.1.2"
     protobufVersion = "2.6.1"
 }
-
+subprojects {
 apply plugin: 'java'
 apply plugin: 'protobuf'
 apply plugin: 'eclipse'
@@ -31,7 +31,6 @@ apply plugin: 'maven'
 
 group = 'org.springframework.bus.firehose'
 version = '1.0.0.BUILD-SNAPSHOT'
-description = "Spring bus firehose source module"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -53,22 +52,20 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.cloudfoundry:cloudfoundry-client-lib:$cfClientVersion")
     compile("com.google.protobuf:protobuf-java:$protobufVersion")
-//    compile("org.eclipse.jetty.websocket:websocket-client:9.2.11.v20150529")
     compile("com.googlecode.protobuf-java-format:protobuf-java-format:1.2")
     testCompile("org.springframework.boot:spring-boot-starter-test")
-    protobuf fileTree("proto/events/") {
+    protobuf fileTree("../proto/events/") {
         exclude "README.md"
     }
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
-}
-
 
 idea.module {
         excludeDirs -= file(buildDir)
         buildDir.listFiles({d,f->f != 'generated-sources'} as FilenameFilter).each {excludeDirs += it}
 }
 
+}
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
 

@@ -1,0 +1,6 @@
+server:
+  port: 8081
+
+security:
+  user:
+    password: s3cr3t
