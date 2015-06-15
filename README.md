@@ -8,9 +8,21 @@ Run `git submodule init` to fetch the protobuf definitions.
 
 When importing this project into your favorite IDE you may need to run `gradle build` to make sure generated classes are created.
 
+### Subprojects
+
+* source-module: Contains the websocket client to doppler, filters messages based on `doppler-events` provided on application.yml or as an environment variable.
+* tap-module: Act as a sink that will log all messages to the console. 
+
+### Dashboard
+
+The `source-module` has a basic dashboard published on its root path (index.html). This simple dashboard can be used to check the throughput
+ of messages being consumed and produced:
+ 
+ ![Dashboard](https://cloud.githubusercontent.com/assets/803893/8170901/0b1d6aa0-1382-11e5-83ee-60a59d4e4af1.png)
+
 ## Redis
 
-For now, the project uses [redis](http://redis.io) as a message broker, so you will need either to have a local installation or if you are running inside PCF, just bind a redis service to the application. 
+The only message bus supported is [redis](http://redis.io). You will need either to have a local installation or if you are running inside PCF, just bind a redis service to the application. 
 
 ## Running with lattice
 
