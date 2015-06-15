@@ -8,7 +8,7 @@ Run `git submodule init` to fetch the protobuf definitions.
 
 When importing this project into your favorite IDE you may need to run `gradle build` to make sure generated classes are created.
 
-## RabbitMQ
+## Redis
 
 For now, the project uses [redis](http://redis.io) as a message broker, so you will need either to have a local installation or if you are running inside PCF, just bind a redis service to the application. 
 
