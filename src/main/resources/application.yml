@@ -7,7 +7,13 @@
     cf-domain:
     username:
     password:
+    trust-self-certs: true
 
  security:
     user:
        password: s3cr3t
+
+
+ logging:
+     level:
+        org.springframework.cloud: DEBUG

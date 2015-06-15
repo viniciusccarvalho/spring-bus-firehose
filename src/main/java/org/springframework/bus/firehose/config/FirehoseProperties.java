@@ -34,6 +34,7 @@ public class FirehoseProperties {
     private String dopplerEvents;
     private String dopplerSubscription;
     private boolean outputJson = false;
+    private boolean trustSelfCerts = false;
 
 
     public String getDopplerUrl() {
@@ -98,5 +99,13 @@ public class FirehoseProperties {
 
     public void setOutputJson(boolean outputJson) {
         this.outputJson = outputJson;
+    }
+
+    public boolean getTrustSelfCerts() {
+        return trustSelfCerts;
+    }
+
+    public void setTrustSelfCerts(boolean trustSelfCerts) {
+        this.trustSelfCerts = trustSelfCerts;
     }
 }

@@ -6,4 +6,10 @@
     cf-domain:
     username:
     password:
+    trust-self-certs: true
 
+ logging:
+     level:
+        org.springframework.cloud: "DEBUG"
+        org.springframework.xd.dirt.integration.rabbit: "DEBUG"
+        org.springframework.amqp: "DEBUG"

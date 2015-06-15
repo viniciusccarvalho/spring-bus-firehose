@@ -10,7 +10,7 @@ When importing this project into your favorite IDE you may need to run `gradle b
 
 ## RabbitMQ
 
-For now, the project uses [rabbitmq](http://rabbitmq.org) as a message broker, so you will need either to have a local installation or if you are running inside PCF, just bind a rabbitmq service to the application. 
+For now, the project uses [redis](http://redis.io) as a message broker, so you will need either to have a local installation or if you are running inside PCF, just bind a redis service to the application. 
 
 ## Running with lattice
 
@@ -35,7 +35,8 @@ Modify the `application.yml` to have the following properties:
     #List of dropsonde events you want to subscribe to
     doppler-events: "HttpStart,LogMessage"
     #should the output message contain POJOs or JSON strings
-    output-json:
+    output-json: <true | false>
+    trust-self-certs: <true | false>
     #usually uaa.<pcfdomain>
     authentication-url:
     cf-domain:
@@ -43,7 +44,7 @@ Modify the `application.yml` to have the following properties:
     password:
 ```
 
-After running you should be able to see the messages showing up on a queue in rabbit named `xdbus.firehose.0`
+After running you should be able to see the messages showing up on a queue in redis named `queue.firehose.0`
 
 ## Todo
 

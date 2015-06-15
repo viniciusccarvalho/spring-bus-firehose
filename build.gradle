@@ -49,11 +49,11 @@ dependencies {
     compile("org.springframework.integration:spring-integration-websocket:$springIntegrationVersion")
     compile("org.springframework.bus:spring-bus-core:$springBusVersion")
     compile("org.springframework.bus:spring-xd-runner:$springBusVersion")
-    compile("org.springframework.xd:spring-xd-messagebus-rabbit:$springXDVersion")
+    compile("org.springframework.xd:spring-xd-messagebus-redis:$springXDVersion")
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.cloudfoundry:cloudfoundry-client-lib:$cfClientVersion")
     compile("com.google.protobuf:protobuf-java:$protobufVersion")
-    compile("org.eclipse.jetty.websocket:websocket-client:9.2.11.v20150529")
+//    compile("org.eclipse.jetty.websocket:websocket-client:9.2.11.v20150529")
     compile("com.googlecode.protobuf-java-format:protobuf-java-format:1.2")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     protobuf fileTree("proto/events/") {

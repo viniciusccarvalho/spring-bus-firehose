@@ -16,10 +16,13 @@
 
 package org.springframework.bus.firehose.config;
 
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.cloudfoundry.client.lib.CloudCredentials;
+import org.cloudfoundry.client.lib.CloudOperationException;
 import org.cloudfoundry.client.lib.oauth2.OauthClient;
 import org.cloudfoundry.client.lib.util.RestUtil;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bus.firehose.integration.ByteBufferMessageConverter;
 import org.springframework.context.ApplicationContext;
@@ -37,11 +40,17 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.jetty.JettyWebSocketClient;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import javax.net.ssl.SSLContext;
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.ContainerProvider;
+import javax.websocket.WebSocketContainer;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Vinicius Carvalho
@@ -57,9 +66,12 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     @Bean
     public WebSocketClient webSocketClient() {
-//        return new StandardWebSocketClient();
-        //@TODO why Jetty client is not working with spring integration 4.2.0? AbstractMethodException being thrown
-        return new JettyWebSocketClient(new org.eclipse.jetty.websocket.client.WebSocketClient(new SslContextFactory(true)));
+        StandardWebSocketClient wsClient = new StandardWebSocketClient();
+        if(firehoseProperties.getTrustSelfCerts()) {
+            SSLContext sslContext = buildSslContext();
+            wsClient.setUserProperties(Collections.singletonMap(WsWebSocketContainer.SSL_CONTEXT_PROPERTY, sslContext));
+        }
+        return wsClient;
     }
 
     @Bean
@@ -114,6 +126,16 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
         return new DirectChannel();
     }
 
+    private SSLContext buildSslContext() {
+        try {
+            SSLContextBuilder contextBuilder = new SSLContextBuilder().
+                    useProtocol("TLS").
+                    loadTrustMaterial(null, new TrustSelfSignedStrategy());
+            return contextBuilder.build();
+        } catch (GeneralSecurityException e) {
+            throw new CloudOperationException(e);
+        }
+    }
 
     private String getDopplerEndpoint() {
 
@@ -129,7 +151,9 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
         ApplicationContext ctx = contextRefreshedEvent.getApplicationContext();
+            ctx.getEnvironment().getActiveProfiles();
         ctx.getBean(ClientWebSocketContainer.class).start();
         ctx.getBean(WebSocketInboundChannelAdapter.class).start();
 
