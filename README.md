@@ -19,7 +19,7 @@ When importing this project into your favorite IDE you may need to run `gradle b
 The `source-module` has a basic dashboard published on its root path (index.html). This simple dashboard can be used to check the throughput
  of messages being consumed and produced:
  
- ![Dashboard](https://cloud.githubusercontent.com/assets/803893/8170901/0b1d6aa0-1382-11e5-83ee-60a59d4e4af1.png)
+ ![Dashboard](https://cloud.githubusercontent.com/assets/803893/8174506/48205150-13ab-11e5-8f3a-8e553ca29e34.png)
 
 ## Redis
 

@@ -1,6 +1,6 @@
  firehose:
     doppler-url: ws://doppler.10.1.1.11.xip.io
-    doppler-events: "HttpStart,LogMessage"
+    doppler-events: "ValueMetric,CounterEvent,ContainerMetric"
     output-json: true
     #only needed if you are deploying to CF
     authentication-url:

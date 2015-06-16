@@ -48,7 +48,13 @@
 
 
 <script>
-
+    var refreshRate = 5000;
+    var loading = true;
+    Highcharts.setOptions({                                            // This is for all plots, change Date axis to local timezone
+        global : {
+            useUTC : false
+        }
+    });
     function metricChart(container) {
         var self = this;
         self.chart = new Highcharts.Chart({
@@ -61,15 +67,26 @@
                     title :{
                         text: "Firehose input/output rates"
                     },
+                    tooltip: {
+                        crosshairs: true,
+                        formatter: function () {
+                            var s = '';
+
+                            $.each(this.points, function () {
+                                s += this.series.name + ': ' +
+                                        this.y +'<br/>';
+                            });
+
+                            return s;
+                        },
+                        shared: true
+                    },
                     xAxis: {
                         type: 'datetime',
                         lineWidth: 0,
                         minorGridLineWidth: 0,
                         lineColor: 'transparent',
-                        dateTimeLabelFormats: '%H:%M:%S',
-                        labels: {
-                            enabled: false
-                        },
+
                         minorTickLength: 0,
                         tickLength: 0
                     },
@@ -88,6 +105,11 @@
                             threshold: 0,
                             marker: {
                                 enabled: false
+                            },
+                            states: {
+                                hover : {
+                                    enabled: false
+                                }
                             }
                         }
                     },
@@ -100,28 +122,67 @@
                             name:"output",
                             data: []
                         }
-                    ]
+                    ],
+                    loading: {
+                        hideDuration: 1000,
+                        showDuration: 1000,
+                        style :{
+                            opacity: 0.1,
+                            backgroundColor: "#5b665d"
+                        }
+                    }
                 }
         );
+
+        self.chart.showLoading("Loading points ...");
+
         self.addPoint = function(data,index){
-            var shift = self.chart.series[0].data.length > 300;
+            self.chart.hideLoading();
+            var shift = self.chart.series[0].data.length > 60;
             self.chart.series[index].addPoint(data,true,shift);
         };
     }
     var chart = new metricChart("throughput-chart");
 
+    function deltaPoint(){
+        var self = this;
+        self.current;
+        self.last;
+
+        self.update = function(value){
+            self.last = self.current;
+            self.current = value;
+        }
+
+        self.delta = function(){
+            return self.current - self.last;
+        }
+    }
+
+    var points = [new deltaPoint(), new deltaPoint()];
 
     (function poll(){
         setTimeout(function(){
             $.ajax({ url: "/metrics", success: function(data){
+                inputValue = data["integration.channel.envelopeChannel.sendRate.count"];
+                outputValue = data["integration.channel.output.sendRate.count"];
 
-                $("#inputTotal").text(data["integration.channel.envelopeChannel.sendRate.count"]);
-                $("#outputTotal").text(data["integration.channel.output.sendRate.count"]);
-                chart.addPoint([Date.now(),data["integration.channel.envelopeChannel.sendRate.mean"]],0);
-                chart.addPoint([Date.now(),data["integration.channel.output.sendRate.mean"]],1);
+                $("#inputTotal").text(inputValue);
+                $("#outputTotal").text(outputValue);
+
+                points[0].update(inputValue);
+                points[1].update(outputValue);
+
+                var now = (new Date()).getTime();
+
+                for(var i=0;i<points.length;i++){
+                    if(!isNaN(points[i].delta())){
+                        chart.addPoint([now,points[i].delta()/(refreshRate/1000)],i);
+                    }
+                }
                 poll();
             }, dataType: "json"});
-        }, 5000);
+        }, refreshRate);
     })();
 
 </script>
