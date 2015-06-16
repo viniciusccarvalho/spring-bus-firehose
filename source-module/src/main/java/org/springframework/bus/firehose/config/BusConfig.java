@@ -23,6 +23,8 @@ import org.cloudfoundry.client.lib.CloudCredentials;
 import org.cloudfoundry.client.lib.CloudOperationException;
 import org.cloudfoundry.client.lib.oauth2.OauthClient;
 import org.cloudfoundry.client.lib.util.RestUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bus.firehose.integration.ByteBufferMessageConverter;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.integration.annotation.Filter;
+import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.websocket.ClientWebSocketContainer;
 import org.springframework.integration.websocket.inbound.WebSocketInboundChannelAdapter;
@@ -63,6 +66,9 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private FirehoseProperties firehoseProperties;
+
+    private Logger logger = LoggerFactory.getLogger(BusConfig.class);
+
 
     @Bean
     public WebSocketClient webSocketClient() {
@@ -147,6 +153,11 @@ public class BusConfig implements ApplicationListener<ContextRefreshedEvent> {
 
     public void setFirehoseProperties(FirehoseProperties firehoseProperties) {
         this.firehoseProperties = firehoseProperties;
+    }
+
+    @ServiceActivator(inputChannel = "errorChannel")
+    public void errorLogger(Object payload){
+        logger.error("Error processing payload : ", payload);
     }
 
     @Override

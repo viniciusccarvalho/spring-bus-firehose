@@ -1,19 +1,18 @@
  firehose:
-    doppler-url: ws://doppler.10.1.1.11.xip.io
-    doppler-events: "ValueMetric,CounterEvent,ContainerMetric"
-    output-json: true
+    doppler-url: ws://doppler.192.168.11.11.xip.io
+    doppler-events: "HttpStartStop,ValueMetric,CounterEvent,ContainerMetric"
     #only needed if you are deploying to CF
     authentication-url:
     cf-domain:
     username:
     password:
     trust-self-certs: true
-
  security:
-    user:
-       password: s3cr3t
-
+     user:
+        password: s3cr3t
 
  logging:
      level:
-        org.springframework.cloud: DEBUG
+        org.springframework.cloud: "DEBUG"
+        org.springframework.xd.dirt.integration.rabbit: "DEBUG"
+        org.springframework.amqp: "DEBUG"

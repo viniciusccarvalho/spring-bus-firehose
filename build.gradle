@@ -23,7 +23,6 @@ ext {
 }
 subprojects {
 apply plugin: 'java'
-apply plugin: 'protobuf'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
@@ -54,9 +53,7 @@ dependencies {
     compile("com.google.protobuf:protobuf-java:$protobufVersion")
     compile("com.googlecode.protobuf-java-format:protobuf-java-format:1.2")
     testCompile("org.springframework.boot:spring-boot-starter-test")
-    protobuf fileTree("../proto/events/") {
-        exclude "README.md"
-    }
+
 }
 
 
@@ -69,10 +66,14 @@ idea.module {
 }
 
 project(':source-module'){
+    apply plugin: 'protobuf'
     dependencies {
         compile 'org.webjars:highcharts:4.1.5'
         compile 'org.webjars:jquery:2.1.4'
         compile 'org.webjars:bootstrap:3.3.4'
+        protobuf fileTree("../proto/events/") {
+            exclude "README.md"
+        }
     }
 }
 

@@ -20,10 +20,13 @@ import com.googlecode.protobuf.format.JsonFormat;
 import org.cloudfoundry.dropsonde.events.EventFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bus.firehose.config.FirehoseProperties;
+import org.springframework.bus.firehose.integration.support.TupleFactory;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import org.springframework.xd.tuple.Tuple;
+import org.springframework.xd.tuple.TupleToJsonStringConverter;
 
 /**
  * @author Vinicius Carvalho
@@ -34,6 +37,8 @@ public class EnvelopeTransformer {
 
     private FirehoseProperties properties;
 
+    private TupleToJsonStringConverter jsonConverter = new TupleToJsonStringConverter();
+
     @Autowired
     public EnvelopeTransformer(FirehoseProperties properties){
         this.properties = properties;
@@ -43,8 +48,9 @@ public class EnvelopeTransformer {
     public Message<?> readEnvelope(Message<?> message) throws Exception {
         byte[] bytes = (byte[]) message.getPayload();
         EventFactory.Envelope envelope = EventFactory.Envelope.parseFrom(bytes);
+        Tuple tuple = TupleFactory.createTuple(envelope);
         Object payload = null;
-        payload = (properties.getOutputJson()) ? JsonFormat.printToString(envelope) : envelope;
+        payload = (properties.getOutputJson()) ? jsonConverter.convert(tuple) : tuple;
         Message<?> result = MessageBuilder.withPayload(payload).setHeader("EventType",envelope.getEventType().name()).build();
         return result;
     }
