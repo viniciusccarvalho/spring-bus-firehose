@@ -23,6 +23,7 @@ import org.springframework.bus.firehose.config.FirehoseProperties;
 import org.springframework.bus.firehose.support.ProtocolGenerator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.xd.tuple.Tuple;
 
 /**
  * @author Vinicius Carvalho
@@ -42,7 +43,7 @@ public class EnvelopeTransformerIntegration {
 
         Message<?> transformedMessage = transformer.readEnvelope(message);
 
-        Assert.assertTrue((transformedMessage.getPayload() instanceof EventFactory.Envelope));
+        Assert.assertTrue((transformedMessage.getPayload() instanceof Tuple));
 
     }
 

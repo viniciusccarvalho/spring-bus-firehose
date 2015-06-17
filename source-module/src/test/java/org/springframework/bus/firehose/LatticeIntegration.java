@@ -26,14 +26,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 /**
  * @author Vinicius Carvalho
  *
- * This is an integrationTest it won't run without a local lattice and a rabbitmq broker started
+ * This is an integrationTest it won't run without a local lattice and a redis db started
  *
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class LatticeIntegrationTest {
+public class LatticeIntegration {
 
     @Test
     public void start() throws Exception{
